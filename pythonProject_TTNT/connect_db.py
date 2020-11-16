@@ -1,7 +1,7 @@
 import _sqlite3
 import sys
 from datetime import datetime
-from PyQt5.QtWidgets import QMessageBox
+import datetime as day
 
 class connect_db:
 
@@ -73,8 +73,8 @@ class connect_db:
         if data == []:
             conn.close()
             return 0, None
-        else:
 
+        else:
             ca = '6'
             now = datetime.now()
             today = now.strftime("%H%M")
@@ -90,18 +90,36 @@ class connect_db:
             elif today >= '1800' and today <= '2030':
                 ca = '5'
 
-            # Sinh viên cùng lớp cùng ca trong bảng denlop
-            cur.execute("select d.mssv from denlop d, sinhvien s where d.mssv = s.mssv and cahoc = ? and classcode = ? ORDER BY d.mssv", (ca,classcode))
-            data1 = []
+            # Lấy ngày hiện tại
+            days = day.date.today()
 
-            for rows in cur:
-                data1.append(rows)
+            cur.execute("select time from denlop")
+            data2 = []
+            for row in cur:
+                data2.append(row)
 
-            for i in range(len(data) - len(data1)):
-                print(i+len(data1))
-                cur.execute("INSERT INTO denlop(mssv, time, cahoc) VALUES(?, datetime(datetime('now'), 'localtime'), ?)",(data[i+len(data1)][0], ca))
-                conn.commit()
+            # So sánh ngày hiện tại và ngày trong table dentop
+            temp = True
+            for i in range(len(data2)):
+                if str(days) == str(data2[i][0]):
+                    temp = False
 
+            if temp:
+                for i in range(len(data)):
+                    cur.execute("INSERT INTO denlop(mssv, time, cahoc) VALUES(?, date('now'), ?)", (data[i][0], ca))
+                    conn.commit()
+
+            else:
+                # Sinh viên cùng lớp cùng ca trong bảng denlop
+                cur.execute("select d.mssv from denlop d, sinhvien s where d.mssv = s.mssv and cahoc = ? and classcode = ? ORDER BY d.mssv", (ca,classcode))
+                data1 = []
+                for rows in cur:
+                    data1.append(rows)
+
+                for i in range(len(data) - len(data1)):
+                    print(i+len(data1))
+                    cur.execute("INSERT INTO denlop(mssv, time, cahoc) VALUES(?, date('now'), ?)",(data[i+len(data1)][0], ca))
+                    conn.commit()
 
         conn.close()
         return ca, data
@@ -111,16 +129,16 @@ class connect_db:
         conn = self.connect()
         cur = conn.cursor()
 
-        # Update sinh viên đi học
-        cur.execute("UPDATE denlop SET comat = ? where mssv = ? and cahoc = ?", (1, mssv, ca))
+        days = day.date.today()
+
+        cur.execute("UPDATE denlop SET comat = ? where mssv = ? and cahoc = ? and time = ?", (1, mssv, ca, str(days)))
         conn.commit()
         conn.close()
 
     def xuatfile(self, classcode):
         conn = self.connect()
         cur = conn.cursor()
-
-        cur.execute("select d.mssv as MSSV, name as [Họ Tên], classcode as [Lớp], cahoc as [Ca học], date(time) as [Thời gian], CASE comat WHEN 0 THEN'Vắng' ELSE'Có Mặt' END as [Điểm Danh] from denlop as d, sinhvien as s WHERE d.mssv = s.mssv AND classcode = ? ORDER by cahoc, time",(classcode,))
+        cur.execute("select d.mssv as MSSV, name as [Họ Tên], classcode as [Lớp], cahoc as [Ca học], time as [Thời gian], CASE comat WHEN 0 THEN'Vắng' ELSE'Có Mặt' END as [Điểm Danh] from denlop as d, sinhvien as s WHERE d.mssv = s.mssv AND classcode = ? ORDER by time",(classcode,))
 
         data = [("MSSV", "Họ Tên", "Lớp", "Ca Học", "Thời Gian", "Điểm Danh")]
 
