@@ -161,8 +161,7 @@ class tehseencode(QDialog,trainning_face.trainning_face, Face_Recognition.Face_R
 
     # Mở camera khi chưa có file recognizer và có chức năng chụp ảnh
     def onClicked(self):
-        self.flag = 1
-
+        
         self.cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
         face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
