@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QMessageBox
 import connect_db
 import trainning_face
 import Face_Recognition
+from numpy import copy
 
 class AppClone(QWidget, connect_db.connect_db):
 
@@ -209,7 +210,7 @@ class tehseencode(QDialog,trainning_face.trainning_face, Face_Recognition.Face_R
     ''' '''
     # HIển thị ảnh lên label
     def displayImage(self, img, window):
-
+        img = copy(img)
         qformat = QImage.Format_Indexed8
         if len(img.shape) == 3:
             if (img.shape[2]) == 4:
@@ -278,7 +279,7 @@ class tehseencode(QDialog,trainning_face.trainning_face, Face_Recognition.Face_R
 
     #kết thúc chương trình
     def closeEvent(self):
-        if self.flag == 1:
+        if self.number == 1 or self.number == 2:
            self.cap.release()
            cv2.destroyAllWindows()
            sys.exit(app.exec_())
