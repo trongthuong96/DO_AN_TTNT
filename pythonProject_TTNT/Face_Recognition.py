@@ -87,5 +87,5 @@ class Face_Recognition:
 
                         self.logic = 0
 
-            self.displayImage(frame, self.number)
-            cv2.waitKey()
+                self.displayImage(frame, self.number)
+                cv2.waitKey()
