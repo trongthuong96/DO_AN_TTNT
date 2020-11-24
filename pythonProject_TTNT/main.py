@@ -20,7 +20,7 @@ class AppClone(QWidget, connect_db.connect_db):
         self.title = 'Điểm Danh'
         self.left = 300
         self.top = 30
-        self.width = 640
+        self.width = 800
         self.height = 600
         self.classcode = classcode
         print(classcode)
@@ -127,7 +127,12 @@ class tehseencode(QDialog,trainning_face.trainning_face, Face_Recognition.Face_R
         # Hiện, Ẩn nút
         self.number = 2
         if not os.path.isfile("recognizer/trainning.yml"):
-            self.onClicked()
+            msg = QMessageBox()
+            msg.setWindowTitle("Warning")
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("Vui lòng thêm dữ liệu. Dữ liệu trống")
+            x = msg.exec_()
+
         else:
             flag, self.mssv = self.upclassdiemdanh(self.lineEdit_class_2.text())
             self.ca = flag
@@ -141,7 +146,7 @@ class tehseencode(QDialog,trainning_face.trainning_face, Face_Recognition.Face_R
                 msg.setText("Vui lòng nhập đúng mã Lớp cần điểm danh.")
                 x = msg.exec_()
 
-            if flag != 0:
+            elif flag != 0:
                 self.pushButton_file.setEnabled(False)
                 self.pushButton_stop_2.setEnabled(True)
                 self.pushButton_start.setEnabled(False)
